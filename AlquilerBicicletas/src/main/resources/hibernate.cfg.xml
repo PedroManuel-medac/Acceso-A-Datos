@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<hibernate-configuration>
+    <session-factory>
+        
+        <!-- Configuración de conexión -->
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/alquilerbicis</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password">pedro</property>
+        
+        <!-- Dialecto, se necesita saber como traducir su SQL genérico al SQL específico de nuestra BBDD -->
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</property>
+        
+        <!-- Crear o actualizar tablas según las clases mapeadas(sin borrar datos) -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
+        
+        <!-- Mostrar SQL en el terminal las sentencias SQL que se ejecuta hiernate y las formatea -->
+        <property name="show_sql">true</property>
+        <property name="format_sql">true</property>
+    
+        <!--Mapear-->
+        <mapping resource="Usuario.hbm.xml"/>
+        <mapping resource="Alquiler.hbm.xml"/>
+        <mapping resource="Bicicleta.hbm.xml"/>
+        <mapping resource="Estacion.hbm.xml"/>
+
+
+    </session-factory>
+</hibernate-configuration>

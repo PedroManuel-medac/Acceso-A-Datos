@@ -1,0 +1,20 @@
+<hibernate-mapping>
+   <class name = "com.example.AlquilerBicicletas.Alquiler" table = "Alquiler">
+    <meta attribute = "class-description">
+        Clase que almacena información del alquiler
+    </meta>
+
+    <id name = "id" type ="int" column ="id_alquiler">
+        <generator class = "native"/>
+    </id>
+
+    <property name = "fecha_inicio" column = "fecha_inicio" type = "string"/>
+    <property name = "fecha_fin" column = "fecha_fin" type = "string"/>
+    <property name = "coste" column = "coste" type = "int"/>
+
+     <many-to-one name="id_bicicleta" class="com.example.AlquilerBicicletas.Bicicleta" column="id_bici"/>
+     <many-to-one name="id_usuario" class="com.example.AlquilerBicicletas.Usuario" column="id_usuario"/>
+
+   </class> 
+</hibernate-mapping>
+
