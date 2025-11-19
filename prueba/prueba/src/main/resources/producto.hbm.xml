@@ -1,0 +1,16 @@
+<hibernate-mapping>
+   <class name = "com.example.prueba.Producto" table = "Producto">
+    <meta attribute = "class-description">
+        Clase que almacena información en producto
+    </meta>
+
+    <id name = "id" type ="int" column ="id_producto">
+        <generator class = "native"/>
+    </id>
+
+    <property name = "nombre" column = "nombre" type = "string"/>
+    <property name = "precio" column = "precio" type = "double"/>
+
+
+   </class> 
+</hibernate-mapping>
