@@ -20,65 +20,64 @@ import java.io.OutputStream;
 public class AlquilerBicicletasApplication {
 
 	public static void main(String[] args) {
-		//SpringApplication.run(AlquilerBicicletasApplication.class, args);
+		// SpringApplication.run(AlquilerBicicletasApplication.class, args);
 
 		Scanner sc = new Scanner(System.in);
 
 		try {
-    HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+			HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
 
-    server.createContext("/formulario", (HttpExchange exchange) -> {
-        String html = "<html><body>" +
-                "<h1>Buscar alquileres por usuario</h1>" +
-                "<form action='/resultados'>" +
-                "ID Usuario: <input name='id'><br>" +
-                "<button type='submit'>Buscar</button>" +
-                "</form></body></html>";
+			server.createContext("/formulario", (HttpExchange exchange) -> {
+				String html = "<html><body>" +
+						"<h1>Buscar alquileres por usuario</h1>" +
+						"<form action='/resultados'>" +
+						"ID Usuario: <input name='id'><br>" +
+						"<button type='submit'>Buscar</button>" +
+						"</form></body></html>";
 
-        exchange.sendResponseHeaders(200, html.length());
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(html.getBytes());
-        }
-    });
+				exchange.sendResponseHeaders(200, html.length());
+				try (OutputStream os = exchange.getResponseBody()) {
+					os.write(html.getBytes());
+				}
+			});
 
-    server.createContext("/resultados", (HttpExchange exchange) -> {
-        String query = exchange.getRequestURI().getQuery();
-        int id = Integer.parseInt(query.split("=")[1]);
+			server.createContext("/resultados", (HttpExchange exchange) -> {
+				String query = exchange.getRequestURI().getQuery();
+				int id = Integer.parseInt(query.split("=")[1]);
 
-        SessionFactory sf = new Configuration().configure().buildSessionFactory();
-        Session session = sf.openSession();
+				SessionFactory sf = new Configuration().configure().buildSessionFactory();
+				Session session = sf.openSession();
 
-        List<Alquiler> lista = session.createQuery(
-                "FROM Alquiler a WHERE a.id_usuario.id = :id", Alquiler.class)
-                .setParameter("id", id)
-                .list();
+				List<Alquiler> lista = session.createQuery(
+						"FROM Alquiler a WHERE a.id_usuario.id = :id", Alquiler.class)
+						.setParameter("id", id)
+						.list();
 
-        session.close();
+				session.close();
 
-        StringBuilder html = new StringBuilder("<html><body><h1>Resultados</h1>");
+				StringBuilder html = new StringBuilder("<html><body><h1>Resultados</h1>");
 
-        for (Alquiler a : lista) {
-            html.append("Alquiler ")
-                    .append(a.getId())
-                    .append(" - Inicio: ").append(a.getFecha_inicio())
-                    .append(" - Fin: ").append(a.getFecha_fin())
-                    .append("<br>");
-        }
+				for (Alquiler a : lista) {
+					html.append("Alquiler ")
+							.append(a.getId())
+							.append(" - Inicio: ").append(a.getFecha_inicio())
+							.append(" - Fin: ").append(a.getFecha_fin())
+							.append("<br>");
+				}
 
-        html.append("</body></html>");
+				html.append("</body></html>");
 
-        exchange.sendResponseHeaders(200, html.length());
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(html.toString().getBytes());
-        }
-    });
+				exchange.sendResponseHeaders(200, html.length());
+				try (OutputStream os = exchange.getResponseBody()) {
+					os.write(html.toString().getBytes());
+				}
+			});
 
-    server.start();
-    System.out.println("Servidor web iniciado en http://localhost:8080/formulario");
-} catch (IOException e) {
-    e.printStackTrace();
-}
-
+			server.start();
+			System.out.println("Servidor web iniciado en http://localhost:8080/formulario");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		while (true) {
 			System.out.println("==== MENÚ PARA CREAR Y ALQUILAR ====");
@@ -210,14 +209,25 @@ public class AlquilerBicicletasApplication {
 			else if (eleccion == 6) {
 				SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
 				Session session = sessionFactory.openSession();
+				session.beginTransaction();
 
 				System.out.println("Inserte el id del alquiler que quieres borrar: ");
 				int idborraralquiler = sc.nextInt();
 				Alquiler alquiler = session.get(Alquiler.class, idborraralquiler);
 
-				session.delete(alquiler);
-				session.beginTransaction();
-				session.getTransaction().commit();
+				System.out.println("¿Estás seguro de eliminar? (sí/no)");
+				String respuesta = sc.next();
+
+				if (respuesta.equalsIgnoreCase("no")) {
+					session.getTransaction().rollback(); 
+					System.out.println("Operación cancelada");
+				} else {
+					session.delete(alquiler);
+					session.getTransaction().commit();
+					System.out.println("Alquiler eliminado");
+				}
+
+				session.close();
 			}
 
 			else if (eleccion == 7) {
